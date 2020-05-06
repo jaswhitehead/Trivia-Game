@@ -1,232 +1,131 @@
-var divsIds = ['subContainer1', 'subContainer2', 'subContainer3']
-var seconds = 25;
-var numberOfGames = 0;
-var wins = 0;
-var lost = 0;
-var outOfTimeCounter = 0;
-var timer;
-var availableQuestionsObjects = [];
-var questionPlaying;
-var answer;
-var clicked;
+var Trivia = {
 
-// creating the object
-function TriviaQuestion(question, answer1, answer2, answer3, answer4, correctAnswer, correctAnswerWord, gif) {
-  this.question = question;
-  this.answer1 = answer1;
-  this.answer2 = answer2;
-  this.answer3 = answer3;
-  this.answer4 = answer4;
-  this.correctAnswer = correctAnswer;
-  this.correctAnswerWord = correctAnswerWord;
-  this.gif = gif;
-}
+    // TRIVA VARIABLES
+    // Questions as an array
+    questions: ["What is the name of the Greek God of Love?", "What is the name of Snoopy's arch-nemesis?", "What did the Tennessee Titans used to be called and from what city?"],
+    // Options as an array of arrays
+    options: [["Athena", "Eros", "Cupid", "Aphrodite"], ["Skeletor", "Woodstock", "Linus", "Red Baron"], ["Baltimore Colts", "Houston Oilers", "Houston Texans", "Tennessee Volunteers"]],
+    // Answers as an array
+    answers: ["Eros", "Red Baron", "Houston Oilers"],
 
-function restartQuestions() {
-  console.log("RESTART QUESTION");
-  availableQuestionsObjects = [
-    new TriviaQuestion("What is the name of the galaxy we live in?", "Milky Way", "Large Magellanic Cloud", "Andromeda", "Black Eye ", 1, "Milky Way","gif1.gif"),
-    new TriviaQuestion("What was the first computer programming language?", "MATRIX MATH", "Plankalkül", "BASIC", "Borland Pascal", 2, "Plankalkül","gif2.gif"),
-    new TriviaQuestion("what is the tallest mountain on earth?", "K2", "Mount Everest", "Mauna Kea", "Cho Oyu", 3, "Mauna Kea","gif3.jpg"),
-    new TriviaQuestion("What is the oldest shark in the world?", "hammerhead shark", "bull shark", "white shark", "Greenland shark", 4, "Greenland shark","gif4.jpg"),
-    new TriviaQuestion("How deep is the pacific ocean?", "35,797′", "27,841′", "26,401′", "23,740′", 1, "35,797′","gif5.gif")
-  ];
-};
+    // USER VARIABLES
+    userAnswers: [],
 
-initialPage()
+    // Updates the display to show the question and options for the current round
+    initializeDisplay: function () {
+        $("#finish").show();
 
-// -building the screen of the game----------------------------------------
-function creatingDivs() {
-  $('#mainContainer').empty();
-  for (var i = 0; i < divsIds.length; i++) {
-    var divs = $('<div>');
-    divs.attr('id', divsIds[i]);
-    $('#mainContainer').append(divs)
-    divs.addClass("subContainerClass" + [i + 1])
-    divs.addClass("border")
-  }
-  creatingButtons()
-  // --Answer click event---------------------------------------
-  $('.buttonAnswer').on("click", function(e) {
-    console.log("BUTTON ANSWER CLICK EVENT");
-    if (clicked === false) {
-      var values = $(this).val();
-      answer = parseInt(values)
-      console.log('answer button value: ' + answer);
-      answerVerification()
-    } else {
+        for (let i = 0; i < this.questions.length; i++) {
 
+            let div = $("<div>");
+            div.addClass("container")
+
+            let question = $("<div>");
+            question.addClass("row container-fluid question");
+            question.html('<h3>' + this.questions[i] + '</h3>');
+            div.append(question);
+
+            let id = ("q" + i);
+
+            let options = $("<div>");
+            options.addClass("row", "container");
+
+            for (let j = 0; j < this.options[i].length; j++) {
+                let option = $('<div>');
+                option.addClass('col-md-3');
+                let button = $("<button>").text(this.options[i][j]);
+                button.addClass('q' + i);
+                button.addClass("btn btn-secondary btn-large btn-block option-button");
+                button.attr('id', (id + '-option-' + j));
+                option.append(button);
+                options.append(option);
+            }
+
+            div.append(options);
+
+            $("#game-board").append(div);
+        }
+
+    },
+
+    calculateResults: function () {
+        let totalQuestions = this.answers.length;
+        let correctAnswers = 0;
+
+        for (let i = 0; i < this.userAnswers.length; i++) {
+            if (this.answers.includes(this.userAnswers[i])) {
+                correctAnswers++;
+            }
+        }
+
+        let div = $("<div>");
+        div.addClass("results");
+        div.html("<h2> You guessed " + correctAnswers + " out of " + totalQuestions + " correct! </h2>");
+
+        $("#results").append(div);
     }
-  });
-  // --End answer click event-------------------------------------
-}
-
-// -Bulding the four buttons for the posibles answes----------------------------
-function creatingButtons() {
-  for (var i = 0; i < 4; i++) {
-    var button = $('<button>');
-    button.attr('value', [i + 1]);
-    button.attr('id', "buttonPosition" + [i + 1]);
-    $('#subContainer3').append(button)
-    button.addClass("buttonAnswer")
-  }
-}
-
-//-Choseing a random question---------------------------------------------------
-function selectQuestion() {
-  console.log("SELECT QUESTION");
-  var random = Math.floor(Math.random() * (availableQuestionsObjects.length));
-  console.log("random number:" + random);
-  questionPlaying = availableQuestionsObjects[random];
-  console.log("Question Playing: " + questionPlaying);
-  console.log("availableQuestionsObjects before splice: " + availableQuestionsObjects);
-  availableQuestionsObjects.splice(random, 1);
-  console.log("availableQuestionsObjects after splice: " +  availableQuestionsObjects);
 
 }
 
-//-printing on screen the seleted question--------------------------------------
-function printQuestion() {
-  console.log("PRINT QUESTION");
-  console.log("Question Playing: " + questionPlaying.question);
-  $("#subContainer2").html('<h2>' + questionPlaying.question + '</h2>');
-  $("#buttonPosition1").html(questionPlaying.answer1);
-  $("#buttonPosition2").html(questionPlaying.answer2);
-  $("#buttonPosition3").html(questionPlaying.answer3);
-  $("#buttonPosition4").html(questionPlaying.answer4);
+// ------ Helper Functions ------
 
+function startTimer() {
+    clearInterval(timer);
+    timer = setInterval(() => {
+        guessTime--;
+
+        $("#time-remaining").text(guessTime);
+
+        if (guessTime === 0) {
+
+            stopTimer(timer);
+            $(".btn").addClass("disabled");
+            $(".btn").attr("aria-disabled", "true");
+            $(".btn").prop("disabled", true);
+            alert("Time Up!");
+        }
+    }, 1000);
 }
 
-//-Countdown counter---------------------------------------------------------
-function countDown(seconds) {
-  console.log("COUNTDOWN");
-  console.log("SECONDS LEFT: " + seconds);
-  $("#subContainer1").html('<h3>'+"Remainig Time: " + seconds +'</h3>');
-  if (seconds < 0) {
-    console.log("seconds are less than zero");
-    //debugger
-      outOfTimeF();
-    return
-  }
-  seconds--;
-  timer = setTimeout('countDown(' + seconds + ')', 1000);
+function stopTimer(timer) {
+    clearInterval(timer);
 }
 
-//----------------------------------------------------------------------------
-function outOfTimeF() {
-  console.log("OUT OF TIME");
-  clicked = true;
-  outOfTimeCounter++;
-  console.log("Out of time counter: " + outOfTimeCounter);
-  console.log('games counter' + numberOfGames);
-  $("#subContainer1").html('<h2>'+"Out Of Time!"+'</h2>');
-  console.log(clicked);
-debugger
-  correctAnswer()
-}
+// ------ Game Flow ------
+$(document).ready(function () {
+    // Triva object
+    var trivia = Trivia;
 
-//-Print on screen the correct answer-------------------------------------------
-function correctAnswer() {
-  $("#subContainer2").html('<h2>'+"The Correct Answer was: " + questionPlaying.correctAnswerWord +'</h2>');
-  image();
-  clearTimeout(timer)
-  timer = setTimeout('playing()', 3500);
-}
+    $("#start").on("click", function () {
+        // Set up game screen
+        $("#start").hide();
+        trivia.initializeDisplay();
 
-//-Restart the parameters of the game-------------------------------------------
-function restartGame() {
-  console.log("RESTART GAME");
-  clearTimeout(timer);
-  numberOfGames = 0
-  wins = 0
-  lost = 0
-  outOfTimeCounter = 0
-  console.log("Reset Status of: " + "wins: " + wins + "Lost: " + lost + "Out of time: " + outOfTimeCounter);
-};
+        // start timer
+        // Timer variables
+        timer = 0;
+        guessTime = 15;
+        startTimer();
 
-//-Calls the necessaries functions to play the game-----------------------------
-function playing() {
-  console.log("PLAY GAME");
-  clicked = false;
-  if (numberOfGames === 5) {
-    gameOver()
-  } else {
-    clearTimeout(timer);
-    creatingDivs();
-    selectQuestion();
-    printQuestion();
-    numberOfGames++
-    countDown(seconds)
-  }
-}
-//-Verify the answer chosen by the player---------------------------------------
-function answerVerification() {
-  if (answer === questionPlaying.correctAnswer) {
-    wins++;
-    clicked = true;
-    console.log('wins new value: ' + wins);
-    $("#subContainer1").html('<h2>'+"Correct!"+'</h2>');
-    image();
-    clearTimeout(timer)
-    timer = setTimeout('playing()', 3500);
-  } else {
-    lost++;
-    clicked = true;
-    console.log('lost new value: ' + lost);
-    $("#subContainer1").html('<h2>'+"Nope!"+'</h2>');
-    correctAnswer();
-  }
+        $(".btn-secondary").on("click", function () {
+            trivia.userAnswers.push($(this).text());
 
-}
+            let questionString = "." + this.id.slice(0, 2);
+            
+            $(questionString).addClass("disabled");
+            $(questionString).attr("aria-disabled", "true");
+            $(questionString).prop("disabled", true);
+            $("#finish").show();
 
-//-building the Start screen-----------------------------------------------------
+        });
 
-function initialPage() {
-  $('#mainContainer').empty();
-  var button = $('<button>');
-  button.attr('id', "start");
-  $('#mainContainer').append(button)
-  button.addClass("button")
-  button.text('Start')
-  $('#start').on("click", function(e) {
-    console.log("Start Button - Clicked");
-    restartGame();
-    restartQuestions();
-    playing();
-  });
-
-}
-
-//-building the Game Over screen--------------------------------------------------
-function gameOver() {
-  $('#subContainer1').empty()
-  $('#subContainer2').empty()
-  $('#subContainer3').empty()
-  console.log("GAME OVER");
-  $("#subContainer1").html('<h3>' + "GAME OVER"+'</h3>');
-  for (var i = 0; i < 3; i++) {
-    var button = $('<button>');
-    button.attr('id', "buttonPosition" + [i + 1]);
-    $('#subContainer2').append(button)
-    button.addClass("buttonResults")
-  }
-  var button = $('<button>');
-  button.attr('id', "restart");
-  $('#subContainer3').append(button)
-  button.addClass("buttonAnswer")
-  $("#buttonPosition1").html("Correct: " + wins)
-  $("#buttonPosition2").html("Incorrect : " + lost)
-  $("#buttonPosition3").html("Unaswer: " + outOfTimeCounter)
-  $("#restart").html("Click to restart")
-
-  $('#restart').on("click", function(e) {
-    console.log("Restart Button - Clicked");
-    initialPage();
-  });
-};
-
-function image(){
-  var image = $('<img>');
-  image.attr("src", "assets/images/"+ questionPlaying.gif);
-  $("#subContainer2").append(image)
-}
+        $("#finish").on("click", function () {
+            stopTimer(timer);
+            trivia.calculateResults();
+            $(".btn").addClass("disabled");
+            $(".btn").attr("aria-disabled", "true");
+            $(".btn").prop("disabled", true);
+            $("#finish").hide();
+        })
+    })
+});
