@@ -6,18 +6,18 @@ var Trivia = {
     "What is the name of Snoopy's arch-nemesis?", 
     "What did the Tennessee Titans used to be called and from what city?", 
     "Where is the Southern-most point of the United States located?", 
-    "What is the name of Snoopy's arch-nemesis?", 
-    "What is the name of Snoopy's arch-nemesis?",],    
+    "Who shot Abraham Lincoln in Ford's Theater?", 
+    "What is another word for talkative?",],    
     
     // Answers as an array of arrays.....Hope this makes sense
     options: [["Athena", "Eros", "Cupid", "Aphrodite"], 
     ["Skeletor", "Woodstock", "Linus", "Red Baron"], 
     ["Baltimore Colts", "Houston Oilers", "Houston Texans", "Tennessee Volunteers"], 
     ["Key West, FL", "Chorpus Christi, TX", "San Diego, CA", "South Point, TX"], 
-    ["Baltimore Colts", "Houston Oilers", "Houston Texans", "Tennessee Volunteers"],
-    ["Baltimore Colts", "Houston Oilers", "Houston Texans", "Tennessee Volunteers"]],
+    ["Lee Harvey Oswold", "Timothy McVey", "Ted Bundy", "John Wilkes Booth"],
+    ["Loud", "Annoying", "Loquacious", "Mousy"]],
     // Answers as an array
-    answers: ["Eros", "Red Baron", "Houston Oilers", "Key West, FL"],
+    answers: ["Eros", "Red Baron", "Houston Oilers", "Key West, FL", "John Wilkes Booth", "Loquacious"],
 
     // USER VARIABLES
     userAnswers: [],
@@ -95,7 +95,7 @@ function startTimer() {
             $(".btn").prop("disabled", true);
             alert("Time Up!");
         }
-    }, 1000);
+    }, 500);
 }
 
 function stopTimer(timer) {
@@ -115,7 +115,7 @@ $(document).ready(function () {
         // start timer
         // Timer variables
         timer = 0;
-        guessTime = 200;
+        guessTime = 60;
         startTimer();
 
         $(".btn-secondary").on("click", function () {
