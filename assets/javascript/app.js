@@ -2,11 +2,22 @@ var Trivia = {
 
     // TRIVA VARIABLES
     // Questions as an array
-    questions: ["What is the name of the Greek God of Love?", "What is the name of Snoopy's arch-nemesis?", "What did the Tennessee Titans used to be called and from what city?"],
-    // Options as an array of arrays
-    options: [["Athena", "Eros", "Cupid", "Aphrodite"], ["Skeletor", "Woodstock", "Linus", "Red Baron"], ["Baltimore Colts", "Houston Oilers", "Houston Texans", "Tennessee Volunteers"]],
+    questions: ["What is the name of the Greek God of Love?", 
+    "What is the name of Snoopy's arch-nemesis?", 
+    "What did the Tennessee Titans used to be called and from what city?", 
+    "Where is the Southern-most point of the United States located?", 
+    "What is the name of Snoopy's arch-nemesis?", 
+    "What is the name of Snoopy's arch-nemesis?",],    
+    
+    // Answers as an array of arrays.....Hope this makes sense
+    options: [["Athena", "Eros", "Cupid", "Aphrodite"], 
+    ["Skeletor", "Woodstock", "Linus", "Red Baron"], 
+    ["Baltimore Colts", "Houston Oilers", "Houston Texans", "Tennessee Volunteers"], 
+    ["Key West, FL", "Chorpus Christi, TX", "San Diego, CA", "South Point, TX"], 
+    ["Baltimore Colts", "Houston Oilers", "Houston Texans", "Tennessee Volunteers"],
+    ["Baltimore Colts", "Houston Oilers", "Houston Texans", "Tennessee Volunteers"]],
     // Answers as an array
-    answers: ["Eros", "Red Baron", "Houston Oilers"],
+    answers: ["Eros", "Red Baron", "Houston Oilers", "Key West, FL"],
 
     // USER VARIABLES
     userAnswers: [],
@@ -104,7 +115,7 @@ $(document).ready(function () {
         // start timer
         // Timer variables
         timer = 0;
-        guessTime = 15;
+        guessTime = 200;
         startTimer();
 
         $(".btn-secondary").on("click", function () {
