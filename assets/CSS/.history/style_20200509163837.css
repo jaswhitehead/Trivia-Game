@@ -3,7 +3,7 @@ h1,h2,h3 {
 }
 
 body {
-    background-image: url("../images/milky-way-starry-sky.jpeg");
+    background-image: url("assets/images/milky-way-starry-sky.jpeg");
     background-repeat: repeat-y;
     background-size: cover;
     margin-left: 20px;
